@@ -50,7 +50,7 @@ waiting....
 <div id="message1">
 
 </div>
-<br>
+<br><br>
 <input id="inp" type="text">
 <br><br>
 <button id='send'>send</button>
@@ -100,8 +100,8 @@ usrName.style.margin = "auto";
 });
 
 window.addEventListener('keydown', e=> {
-socket.emit('typing',"typing...");
- 
+socket.emit('typing', "typing...");
+
 if (e.keyCode == 13) {
 const userID = socket.id;
 socket.emit('send-data', dataInp.value, userID);
@@ -111,10 +111,10 @@ dataInp.value = " ";
 })
 
 
-//get teh typehnhg reslut 
+//get teh typehnhg reslut
 
-socket.on('typing-get',e=>{
-  msg.innerHTML=e;
+socket.on('typing-get', e=> {
+msg.innerHTML = e;
 })
 </script>
 
