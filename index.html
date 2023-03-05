@@ -56,9 +56,9 @@ waiting....
 <button id='send'>send</button>
 
 
-<script src="http://localhost:3000/socket.io/socket.io.js"></script>
+<script  src="http://localhost:3000/socket.io/socket.io.js"></script>
 
-<script>
+<!--<script>
 const usrName = document.getElementById('userName');
 const ID = document.getElementById("usrID");
 const socket = io("http://localhost:3000")
@@ -116,6 +116,59 @@ dataInp.value = " ";
 socket.on('typing-get', e=> {
 msg.innerHTML = e;
 })
+</script>-->
+
+<script>
+
+const usrName = document.getElementById('userName');
+const ID = document.getElementById("usrID");
+const socket = io("http://localhost:3000")
+const msg = document.getElementById("message");
+const msg1 = document.getElementById('message1');
+
+const dataInp = document.getElementById('inp');
+const btn = document.getElementById("send")
+
+let data = "";
+
+btn.addEventListener("click", e => {
+  data = dataInp.value;
+  socket.emit('send-data', data, socket.id);
+  dataInp.value = "";
+});
+
+window.addEventListener('keydown', e => {
+  socket.emit('typing', "typing...");
+
+  if (e.keyCode == 13) {
+    data = dataInp.value;
+    const userID = socket.id;
+    socket.emit('send-data', data, userID);
+    dataInp.value = "";
+  }
+});
+
+socket.on('receive', (data, usrID) => {
+  msg.innerHTML = data;
+  ID.innerHTML = usrID;
+});
+
+socket.on("user", () => {
+  console.log('user connected from client client side');
+  const name = prompt("user name plz:");
+  usrName.innerHTML = name;
+  usrName.style.color = "white";
+  usrName.style.width = "100px";
+  usrName.style.height = "20px";
+  usrName.style.borderRadius = "5px";
+  usrName.style.margin = "auto";
+});
+
+socket.on('typing-get', e => {
+  msg.innerHTML = e;
+});
+
+
 </script>
 
 </body>
