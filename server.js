@@ -16,23 +16,23 @@ io.on('connection', (socket) => {
 
 
   socket.emit("user", "a new user is connected: ");
-  
+
   //receive chat
-  socket.on("send-data", (e,f)=> {
-    socket.broadcast.emit("receive", e,f);
+  socket.on("send-data", (e, f)=> {
+    socket.broadcast.emit("receive", e, f);
   })
 
   //receive typeing information
-  socket.on('typing',e=>{
-    socket.broadcast.emit("typing-get",e);
+  socket.on('typing', e=> {
+    socket.broadcast.emit("typing-get", e);
   })
-  
+
 
 
 });
- const port=process.ev.PORT || 3000;
+const port = process.ev.PORT || 3000;
 
 
 server.listen(port, () => {
   console.log(`Server is listening on port ${port}`);
-13.
+  
