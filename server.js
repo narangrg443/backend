@@ -1,4 +1,4 @@
-const express = require('express');
+/*const express = require('express');
 const http = require("http");
 const app = express();
 const server = http.createServer(app);
@@ -32,6 +32,43 @@ io.on('connection', (socket) => {
 });
 const port = process.env.PORT || 3000;
 
+
+server.listen(port, () => {
+  console.log(`Server is listening on port ${port}`);
+});
+
+*/
+
+const express = require('express');
+const http = require("http");
+const app = express();
+const server = http.createServer(app);
+const path = require('path');
+const io = require('socket.io')(server);
+
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+io.on('connection', (socket) => {
+  console.log("A new user ");
+
+  socket.emit("user");
+
+  //receive chat
+  socket.on("send-data", (data, userID) => {
+    io.emit("receive", data, userID);
+  });
+
+  //receive typeing information
+  socket.on('typing', e => {
+    socket.broadcast.emit("typing-get", e);
+  });
+});
+
+const port = process.env.PORT || 3000;
 
 server.listen(port, () => {
   console.log(`Server is listening on port ${port}`);
