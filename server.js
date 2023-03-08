@@ -10,6 +10,11 @@ const io = socketio(server);
 app.use(express.static('public'));
 
 // listen for incoming socket connections
+
+app.get("/",(req,res)=>{
+  res.sendFile(__dirname+'/index.html');
+})
+
 io.on('connection', function(socket) {
   console.log('a user connected');
 
