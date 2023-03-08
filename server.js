@@ -58,8 +58,8 @@ io.on('connection', (socket) => {
   socket.emit("user");
 
   //receive chat
-  socket.on("send-data", (data, userID) => {
-    io.emit("receive", data, userID);
+  socket.on("send-data", (data, userID,name) => {
+    io.emit("receive", data, userID,name);
   });
 
   //receive typeing information
