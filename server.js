@@ -1,75 +1,33 @@
-/*const express = require('express');
-const http = require("http");
-const app = express();
-const server = http.createServer(app);
-const path = require('path');
-const io = require('socket.io')(server);
-
-app.use(express.static(path.join(__dirname, 'public')));
-
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
-});
-
-io.on('connection', (socket) => {
-  console.log("A new user ");
-
-
-  socket.emit("user", "a new user is connected: ");
-
-  //receive chat
-  socket.on("send-data", (e, f)=> {
-    socket.broadcast.emit("receive", e, f);
-  })
-
-  //receive typeing information
-  socket.on('typing', e=> {
-    socket.broadcast.emit("typing-get", e);
-  })
-
-
-
-});
-const port = process.env.PORT || 3000;
-
-
-server.listen(port, () => {
-  console.log(`Server is listening on port ${port}`);
-});
-
-*/
-
 const express = require('express');
-const http = require("http");
+const http = require('http');
+const socketio = require('socket.io');
+
 const app = express();
 const server = http.createServer(app);
-const path = require('path');
-const io = require('socket.io')(server);
+const io = socketio(server);
 
-app.use(express.static(path.join(__dirname, 'public')));
+// serve static files from public directory
+app.use(express.static('public'));
 
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
-});
+// listen for incoming socket connections
+io.on('connection', function(socket) {
+  console.log('a user connected');
 
-io.on('connection', (socket) => {
-  console.log("A new user ");
-
-  socket.emit("user");
-
-  //receive chat
-  socket.on("send-data", (data, userID, name) => {
-    io.broadcast.emit("receive", data, userID, name);
+  // listen for incoming messages from client
+  socket.on('message', function(data) {
+    console.log('message received: ' + data);
+    // broadcast message to all connected clients
+    socket.broadcast.emit('message', data);
   });
 
-  //receive typeing information
-  socket.on('typing', e => {
-    socket.broadcast.emit("typing-get", e);
+  // handle socket disconnection
+  socket.on('disconnect', function() {
+    console.log('user disconnected');
   });
 });
 
+// start server
 const port = process.env.PORT || 3000;
-
-server.listen(port, () => {
-  console.log(`Server is listening on port ${port}`);
+server.listen(port, function() {
+  console.log(`listening on *:${port}`);
 });
