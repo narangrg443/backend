@@ -7,7 +7,7 @@ const server = http.createServer(app);
 const io = socketio(server);
 
 // serve static files from public directory
-app.use(express.static('public'));
+//app.use(express.static('public'));
 
 // listen for incoming socket connections
 
