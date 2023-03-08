@@ -130,10 +130,10 @@ const dataInp = document.getElementById('inp');
 const btn = document.getElementById("send")
 
 let data = "";
-
+let name="usr";
 btn.addEventListener("click", e => {
   data = dataInp.value;
-  socket.emit('send-data', data, socket.id);
+  socket.emit('send-data', data, socket.id, name);
   dataInp.value = "";
 });
 
@@ -143,19 +143,19 @@ window.addEventListener('keydown', e => {
   if (e.keyCode == 13) {
     data = dataInp.value;
     const userID = socket.id;
-    socket.emit('send-data', data, userID);
+    socket.emit('send-data', data, userID,name);
     dataInp.value = "";
   }
 });
 
-socket.on('receive', (data, usrID) => {
-  msg.innerHTML = data;
+socket.on('receive', (data, usrID,name) => {
+  msg.innerHTML = name+": "+data;
   ID.innerHTML = usrID;
 });
 
 socket.on("user", () => {
   console.log('user connected from client client side');
-  const name = prompt("user name plz:");
+   name = prompt("user name plz:");
   usrName.innerHTML = name;
   usrName.style.color = "white";
   usrName.style.width = "100px";
