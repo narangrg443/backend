@@ -47,7 +47,7 @@
     socket.on('message', function(data) {
       var messageElem = document.createElement('div');
       messageElem.textContent = data;
-      data.focus();
+    
       messageElem.classList.add('message', 'received');
 
       document.getElementById('messages').appendChild(messageElem);
