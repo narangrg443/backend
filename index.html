@@ -43,6 +43,17 @@
     var socket = io();
     var userName = prompt('Please enter your name:');
 
+
+socket.on('usr-connected',()={
+  
+var messageElem = document.createElement('div');
+      messageElem.textContent = 'New user connected....';
+    
+      messageElem.classList.add('message', 'received');
+
+      document.getElementById('messages').appendChild(messageElem);
+
+});
     // listen for incoming messages from server
     socket.on('message', function(data) {
       var messageElem = document.createElement('div');
