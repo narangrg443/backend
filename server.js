@@ -11,13 +11,13 @@ const io = socketio(server);
 
 // listen for incoming socket connections
 
-app.get("/",(req,res)=>{
+app.get("/", (req, res)=> {
   res.sendFile(__dirname+'/index.html');
 })
 
 io.on('connection', function(socket) {
   console.log('a user connected');
- socket.emit('usr-connected');
+  io.emit('usr-connected');
 
   // listen for incoming messages from client
   socket.on('message', function(data) {
