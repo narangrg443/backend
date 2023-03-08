@@ -1,77 +1,33 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-  
-<meta name="viewport" content="width=device-width, initial-scale=1">
+const express = require('express');
+const http = require('http');
+const socketio = require('socket.io');
 
-  <title>Chat Interface</title>
-</head>
-<style>
-body{
-  padding:0px;
-}
+const app = express();
+const server = http.createServer(app);
+const io = socketio(server);
 
-  #messages {
-    margin-right: 5px;
-    border:2px solid black;
-    box-sizing: border-box;
-    background: lightblue;
-   
-    height:300px;
-    width:400px;
-    overflow:auto;
-  }
+// serve static files from public directory
+app.use(express.static('public'));
 
-  .message.sent {
-    color: green;
-  }
+// listen for incoming socket connections
+io.on('connection', function(socket) {
+  console.log('a user connected');
 
-  .message.received {
-    color: red;
-  }
+  // listen for incoming messages from client
+  socket.on('message', function(data) {
+    console.log('message received: ' + data);
+    // broadcast message to all connected clients
+    socket.broadcast.emit('message', data);
+  });
 
-</style>
-<body>
-  <div id="messages"></div>
-  <form id="message-form">
-    <input type="text" id="message-input">
-    <button type="submit">Send</button>
-  </form>
-  <script src="/socket.io/socket.io.js"></script>
-  <script>
-    var socket = io();
-    var userName = prompt('Please enter your name:');
+  // handle socket disconnection
+  socket.on('disconnect', function() {
+    console.log('user disconnected');
+  });
+});
 
-    // listen for incoming messages from server
-    socket.on('message', function(data) {
-      var messageElem = document.createElement('div');
-      messageElem.textContent = data;
-      data.focus();
-      messageElem.classList.add('message', 'received');
-      
-      document.getElementById('messages').appendChild(messageElem);
-    });
-
-    // handle form submit event
-    document.getElementById('message-form').addEventListener('submit', function(event) {
-      event.preventDefault();
-      var messageInput = document.getElementById('message-input');
-      var messageText = messageInput.value.trim();
-
-      if (messageText) {
-        var messageElem = document.createElement('div');
-        messageElem.textContent = `${userName}: ${messageText}`;
-        messageElem.classList.add('message', 'sent');
-        document.getElementById('messages').appendChild(messageElem);
-        socket.emit('message', `${userName}: ${messageText}`);
-       
-        messageInput.value = '';
-        
-
-      }
-    });
-
-  </script>
-</body>
-</html>
+// start server
+const port = process.env.PORT || 3000;
+server.listen(port, function() {
+  console.log(`listening on *:${port}`);
+});
