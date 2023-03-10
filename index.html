@@ -11,13 +11,13 @@
   body {
     display: flex;
     padding: 0px;
-    margin:0px;
+    margin: 0px;
     justify-content: center;
     align-items: center;
   }
 
   #messages {
-   
+
     margin-right: 5px;
     border: 2px solid black;
     box-sizing: border-box;
@@ -58,6 +58,9 @@
       messageElem.classList.add('message', 'received');
 
       document.getElementById('messages').appendChild(messageElem);
+// focus on the last message
+messageElem.scrollTop = messageElem.scrollHeight;
+messageElem.focus();
     });
 
     // handle form submit event
@@ -70,7 +73,10 @@
         var messageElem = document.createElement('div');
         messageElem.textContent = `${userName}: ${messageText}`;
         messageElem.classList.add('message', 'sent');
-        document.getElementById('messages').appendChild(messageElem);
+
+document.getElementById('messages').appendChild(messageElem);
+   messageElem.scrollTop = messageElem.scrollHeight;
+messageElem.focus();     
         socket.emit('message', `${userName}: ${messageText}`);
 
         messageInput.value = '';
