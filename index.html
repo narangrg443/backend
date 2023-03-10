@@ -9,12 +9,15 @@
 </head>
 <style>
   body {
-    display:flex;
+    display: flex;
     padding: 0px;
+    margin:0px;
+    justify-content: center;
+    align-items: center;
   }
 
   #messages {
-    align-self: center;
+   
     margin-right: 5px;
     border: 2px solid black;
     box-sizing: border-box;
@@ -46,7 +49,7 @@
     var userName = prompt('Please enter your name:');
 
 
-    
+
     // listen for incoming messages from server
     socket.on('message', function(data) {
       var messageElem = document.createElement('div');
