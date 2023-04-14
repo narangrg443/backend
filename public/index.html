@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PIKA CHAT</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>NEPALI CHAT</h1>
+    <div class="chat-window">
+      <div class="messages"></div>
+    </div>
+    <div class='text-input'>
+      <input type="text" id="message-input" placeholder="Type your message...">
+      <button id="send-button">Send</button>
+
+    </div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+    const username = prompt("Please enter your name"); // prompt for username
+
+    const messagesContainer = document.querySelector('.messages');
+    const messageInput = document.querySelector('#message-input');
+    const sendButton = document.querySelector('#send-button');
+
+    sendButton.addEventListener("click", e=> {
+      send();
+    });
+
+    messageInput.addEventListener('keydown', (e) => {
+      e.preventDefault();
+
+      if (e.keyCode === 13) {
+        send();
+
+      }
+    });
+
+
+    socket.on("connection", (data)=> {
+      socket.emit("user-connect", username);
+    })
+
+
+
+    socket.on('message', (data) => {
+      const {
+        username,
+        message
+      } = data;
+      addMessageToUI(username, message, false);
+      scrollToBottom();
+
+
+    });
+
+    function addMessageToUI(username, message, sent) {
+      const messageElement = document.createElement('div');
+      messageElement.classList.add('message');
+      messageElement.classList.add(sent ? 'sent': 'received'); // add sent/received class
+
+      const usernameElement = document.createElement('div');
+      usernameElement.classList.add('username');
+      usernameElement.textContent = username;
+
+      const messageTextElement = document.createElement('div');
+      messageTextElement.classList.add('message-text');
+      messageTextElement.textContent = message;
+
+      messageElement.appendChild(usernameElement);
+      messageElement.appendChild(messageTextElement);
+
+      messagesContainer.appendChild(messageElement);
+    }
+
+
+    function send() {
+
+      const message = messageInput.value.trim();
+      if (message) {
+        socket.emit('message', {
+          username, message
+        }); // send username with message
+        addMessageToUI('You', message, true);
+        messageInput.value = '';
+        scrollToBottom();
+      }
+    }
+
+    function scrollToBottom() {
+      messagesContainer.scrollTo(0, messagesContainer.scrollHeight);
+    }
+
+  </script>
+</body>
+</html>
