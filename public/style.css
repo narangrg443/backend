@@ -1,4 +1,6 @@
 body {
+  overflow: hidden;
+
   margin: 0;
   padding: 0;
 }
@@ -16,10 +18,14 @@ body {
 
 
 .messages {
-  background-image: url("https://www.nepalyp.com/img/np/l/_1588331040_33115.jpg");
+
+  
+background-image: url("https://www.nepalyp.com/img/np/l/_1588331040_33115.jpg");
   background-size: cover;
-  height: 300px;
+  
+  height: 500px;
   overflow-y: scroll;
+  opacity:.8;
 
 }
 
@@ -100,16 +106,17 @@ h1 {
 
 @media (max-width: 768px) {
   .container {
-
+   overflow: hidden
     max-width: 500px;
     max-height: 800px;
     padding: 5px;
   }
   .messages {
-    max-height: 250px;
+   max-height: 290px;
   }
 
   input {
+ 
     width: 60%;
   }
   button {
