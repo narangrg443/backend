@@ -18,9 +18,9 @@ body {
 .messages {
   background-image: url("https://www.nepalyp.com/img/np/l/_1588331040_33115.jpg");
   background-size: cover;
-  height: 400px;
+  height: 300px;
   overflow-y: scroll;
-  
+
 }
 
 .message {
@@ -59,8 +59,8 @@ body {
 }
 
 .message-text.me {
-  color:white;
-  background-color:white;
+  color: white;
+  background-color: white;
   align-self: flex-end;
 }
 
@@ -95,7 +95,7 @@ h1 {
   text-align: center;
   font-size: 25px;
   margin-top: 10px;
-  
+
 }
 
 @media (max-width: 768px) {
@@ -105,10 +105,10 @@ h1 {
     max-height: 800px;
     padding: 5px;
   }
-  .messages{
-   max-height:300px;
+  .messages {
+    max-height: 250px;
   }
-  
+
   input {
     width: 60%;
   }
