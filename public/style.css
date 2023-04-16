@@ -7,7 +7,7 @@ body {
 
 .container {
   max-width: 800px;
-  margin: 0 auto;
+  margin: 0px;
   padding: 5px;
   font-family: Arial, sans-serif;
   border: 1px solid grey;
@@ -19,13 +19,13 @@ body {
 
 .messages {
 
-  
-background-image: url("https://www.nepalyp.com/img/np/l/_1588331040_33115.jpg");
+
+  background-image: url("https://www.nepalyp.com/img/np/l/_1588331040_33115.jpg");
   background-size: cover;
-  
+
   height: 500px;
   overflow-y: scroll;
-  opacity:.8;
+  opacity: .8;
 
 }
 
@@ -33,6 +33,7 @@ background-image: url("https://www.nepalyp.com/img/np/l/_1588331040_33115.jpg");
   word-wrap: break-word;
   margin-bottom: 10px;
   display: flex;
+  min-width:60px;
 }
 
 .username {
@@ -106,20 +107,25 @@ h1 {
 
 @media (max-width: 768px) {
   .container {
-   overflow: hidden
+    overflow: hidden
     max-width: 500px;
     max-height: 800px;
     padding: 5px;
   }
   .messages {
-   max-height: 290px;
+    max-height: 250px;
+
   }
 
   input {
- 
+
     width: 60%;
   }
   button {
     width: 40%;
   }
+  .message{
+    min-width:100px;
+  }
 }
+
