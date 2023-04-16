@@ -18,7 +18,6 @@ app.get('/', function(req, res) {
 
 
 
-
 // Listen for incoming socket connections
 io.on('connection', function(socket) {
  // console.log('a user connected');
