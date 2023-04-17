@@ -8,23 +8,33 @@ const server = http.createServer(app);
 const io = socketio(server);
 
 // Serve static files from the public directory
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static("public", {
+  extended: true
+}));
 
 
 // Serve index.html as the home page
-app.get('/', function(req, res) {
-  res.sendFile(path.join(__dirname, 'public', 'login.html'));
+/*app.get('/', function(req, res) {
+  res.sendFile(__dirname+"/public/login.html");
 });
+*/
 
+app.post("/login", (req, res)=> {
+  res.redirect("/");
+})
+
+app.get('/', function(req, res) {
+  res.sendFile('public/login.html', { root: __dirname });
+});
 
 
 // Listen for incoming socket connections
 io.on('connection', function(socket) {
- // console.log('a user connected');
+  // console.log('a user connected');
 
   // Listen for incoming messages from client
   socket.on('message', function(data) {
-   // console.log('message received: ' + data);
+    // console.log('message received: ' + data);
     // Broadcast message to all connected clients
     socket.broadcast.emit('message', data);
   });
@@ -33,14 +43,16 @@ io.on('connection', function(socket) {
   socket.on('disconnect', function() {
     console.log('user disconnected');
   });
-  
-  
-  
-  socket.on("user-connect",username=>{
+
+
+
+  socket.on("user-connect", username=> {
     console.log("connects")
-    
-    const message="connected to chat";
-    socket.broadcast.emit("message",{username,message})
+
+    const message = "connected to chat";
+    socket.broadcast.emit("message", {
+      username, message
+    })
   })
 });
 
