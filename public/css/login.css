@@ -1,8 +1,4 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Login Page</title>
-  <style>
+ 
     body {
       overflow: hidden;
       margin: 0px;
@@ -48,16 +44,4 @@
       background-color: #3E8E41;
     }
 
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h1>Login</h1>
-    <form action="/" method="post">
-      <input type="text" name="username" placeholder="Username" required>
-      <input type="password" name="password" placeholder="Password" required>
-      <input type="submit" value="Login">
-    </form>
-  </div>
-</body>
-</html>
+  

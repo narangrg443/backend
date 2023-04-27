@@ -20,7 +20,7 @@ const io = socketio(server);
 const dotenv = require('dotenv').config()
 
 
-
+let users = 0;
 // Serve static files from the public directory
 app.use(express.static("public", {
   extended: true
@@ -81,9 +81,13 @@ passport.deserializeUser(chatUser.deserializeUser());
 
 
 
-app.get('/home', function(req, res) {
+app.get('/home', isAuthenticated, function(req, res) {
+  console.log(req.user)
+
+
+
   res.render('chat', {
-    user: req.user
+    user: req.user || {}
   })
 });
 
@@ -99,10 +103,31 @@ app.get('/', function(req, res) {
   });
 });
 
+
+app.get('/logout', function(req, res) {
+  req.logout(function(err) {
+    if (err) {
+      console.log(err);
+      return next(err);
+    }
+    req.session.destroy(function(err) {
+      if (err) {
+        console.log(err);
+        return next(err);
+      }
+      users--;
+      res.redirect('/');
+    });
+  });
+});
+
+
+
+
 app.post('/login', passport.authenticate('local', {
   successRedirect: '/home',
   failureRedirect: '/'
-  
+
 }));
 
 app.post('/register', (req, res) => {
@@ -111,7 +136,8 @@ app.post('/register', (req, res) => {
 
   chatUser.register(new chatUser({
     username
-  }), password, (err, user) => {
+  }), password, (err,
+    user) => {
     if (err) {
       res.render('register', {
         message: err.message
@@ -123,21 +149,43 @@ app.post('/register', (req, res) => {
     }
   });
 });
-app.post('/',(req,res)=>{
-  res.render('login',{message:"login fail"})
+app.post('/', (req, res)=> {
+  res.render('login',
+    {
+      message: "login fail"
+    })
 })
 
 
-app.post("/home", (req, res)=> {
+app.post("/home", isAuthenticated, (req, res) => {
   //save messages to mongoose
 
   // Redirect to home.html with username in the query string
   res.redirect('/home');
 });
 
+function isAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) {
+    // If user is authenticated, call next to continue with the request
+    return next();
+  }
+
+  // If user is not authenticated, redirect to login page
+  res.redirect('/login');
+}
+
+
+
+
+
+
+
 // Listen for incoming socket connections
 io.on('connection', function(socket) {
   // console.log('a user connected');
+  users++;
+
+  io.emit('connection', users);
 
   // Listen for incoming messages from client
   socket.on('message',
@@ -150,6 +198,7 @@ io.on('connection', function(socket) {
   // Handle socket disconnection
   socket.on('disconnect',
     function() {
+      users--;
       console.log('user disconnected');
     });
 
@@ -164,6 +213,10 @@ io.on('connection', function(socket) {
         username, message
       })
     })
+
+
+
+
 });
 
 
