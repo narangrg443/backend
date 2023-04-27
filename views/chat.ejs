@@ -1,19 +1,29 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PIKA CHAT</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .logout-button {
+      position: absolute;
+      top: 40px;
+      right: 10px;
+      width:60px;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
     <h1>NEPALI CHAT</h1>
-
+    <button class="logout-button" onclick="window.location.href='/'">Logout</button>
+   
     <div class="chat-window">
       <div class="messages"></div>
     </div>
-    <form action="/login" method="post">
+    <form>
       <div class='text-input'>
         <input type="text" id="message-input" placeholder="Type your message...">
         <button id="send-button">Enter</button>
@@ -22,10 +32,13 @@
     </form>
   </div>
 
+
+
   <script src="/socket.io/socket.io.js"></script>
   <script>
     const socket = io();
-    const username = prompt("Please enter your name"); // prompt for username
+    const username = '<%= user.username %>';
+
 
     const messagesContainer = document.querySelector('.messages');
     const messageInput = document.querySelector('#message-input');
@@ -59,6 +72,9 @@
 
 
     socket.on("connection", (data)=> {
+
+      addMessageToUI(username, "connected to chat..", true);
+
       socket.emit("user-connect", username);
     })
 
