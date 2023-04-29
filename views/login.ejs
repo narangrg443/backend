@@ -4,15 +4,19 @@
   <title>Login Page</title>
 
 
- <link rel="stylesheet" type="text/css" href="/css/login.css">
+  <link rel="stylesheet" type="text/css" href="/css/login.css">
 
 
 </head>
 <body>
+
+
+  <script src="/socket.io/socket.io.js"></script>
+
   <div class="container">
     <h1>Login</h1>
-    <form action="/login" method="post">
-      <input type="text" name="username" placeholder="Username" required>
+    <form id="login" action="/login" method="post">
+      <input id="username"type="text" name="username" placeholder="Username" required>
       <input type="password" name="password" placeholder="Password" required>
       <input type="submit" value="Login">
     </form>
@@ -27,8 +31,22 @@
       <%
     } %>
   </div>
-<p>Don't have an account? <a href="/register">Register</a></p>
+  <p>
+    Don't have an account? <a href="/register">Register</a>
+  </p>
+  <script>
+    const socket = io();
 
-  
+    const formElement = document.getElementById('login');
+/*
+    formElement.addEventListener('submit', e=> {
+      e.preventDefault();
+      const username = document.getElementById('username').value;
+      socket.emit('user-login', username);
+
+    });
+*/
+  </script>
+
 </body>
 </html>

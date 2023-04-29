@@ -22,13 +22,13 @@
     <div class="chat-window">
       <div class="messages"></div>
     </div>
-    <form>
-      <div class='text-input'>
-        <input type="text" id="message-input" placeholder="Type your message...">
-        <button id="send-button">Enter</button>
 
-      </div>
-    </form>
+    <div class='text-input'>
+      <input type="text" id="message-input" placeholder="Type your message...">
+      <button id="send-button">Enter</button>
+
+    </div>
+
   </div>
 
 
@@ -39,6 +39,11 @@
     const username = '<%= user.username || "" %>';
 
 
+
+
+
+    const onlineUsersList = null;
+    const users = 0;
     const messagesContainer = document.querySelector('.messages');
     const messageInput = document.querySelector('#message-input');
     const sendButton = document.querySelector('#send-button');
@@ -65,30 +70,16 @@
 
       if (e.keyCode === 13) {
         send();
+        socket.emit('user-login', username);
 
       }
     });
 
 
-    socket.on("connection", (data)=> {
-
-     if(username) addMessageToUI(username, "connected to chat..", true);
-
-      socket.emit("user-connect", username);
-    })
 
 
 
-    socket.on('message', (data) => {
-      const {
-        username,
-        message
-      } = data;
-      addMessageToUI(username, message, false);
-      scrollToBottom();
 
-
-    });
 
     function addMessageToUI(username, message, sent) {
       const messageElement = document.createElement('div');
@@ -126,13 +117,57 @@
     function scrollToBottom() {
       messagesContainer.scrollTo(0, messagesContainer.scrollHeight);
     }
-    //show online users
-    socket.on('connection', (onlineUsers) => {
-      const onlineUsersList = document.getElementById('online-users');
-      onlineUsersList.innerHTML = onlineUsers;
+
+
+
+
+
+
+
+
+
+
+    socket.on('message', (data) => {
+      const {
+        username,
+        message
+      } = data;
+      addMessageToUI(username, message, false);
+      scrollToBottom();
 
 
     });
+
+
+    // Client-side code
+
+    socket.on('user-logout', (username) => {
+
+      const message = `${username} has left the chat..`;
+      addMessageToUI("system", message, true);
+
+
+      //addMessageToUI('somebody', 'left chat', false)
+    });
+
+
+    socket.on('user-login', (username)=> {
+      console.log("client login")
+
+      const message = `${username} has connected to chat..`;
+      addMessageToUI("system", message, true);
+
+
+    })
+
+
+
+
+    socket.on('connect', () => {
+      socket.emit('user-login', username);
+      console.log(username, 'Connected to server!');
+    });
+
 
 
 

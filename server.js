@@ -78,18 +78,16 @@ passport.deserializeUser(chatUser.deserializeUser());
 
 
 
-
-
-
 app.get('/home', isAuthenticated, function(req, res) {
-  console.log(req.user)
 
-
-
+  io.emit('user-login', req.user.username);
   res.render('chat', {
     user: req.user || {}
   })
 });
+
+
+
 
 app.get('/register', function(req, res) {
   res.render('register', {
@@ -105,6 +103,13 @@ app.get('/', function(req, res) {
 
 
 app.get('/logout', function(req, res) {
+
+
+
+
+  io.emit('user-logout', req.user.username || {});
+
+
   req.logout(function(err) {
     if (err) {
       console.log(err);
@@ -114,14 +119,26 @@ app.get('/logout', function(req, res) {
       if (err) {
         console.log(err);
         return next(err);
+      } else {
+
+        //io.emit('user-logout', req.user.username || {});
       }
-      users--;
+
+
       res.redirect('/');
     });
   });
 });
 
-
+/*
+app.post('/login', passport.authenticate('local', {
+  successRedirect: '/home',
+  failureRedirect: '/'
+}), function(req, res) {
+  // Send event to client
+  io.emit('user-login', req.user.username);
+});
+*/
 
 
 app.post('/login', passport.authenticate('local', {
@@ -129,6 +146,11 @@ app.post('/login', passport.authenticate('local', {
   failureRedirect: '/'
 
 }));
+
+
+
+
+
 
 app.post('/register', (req, res) => {
   const username = req.body.username;
@@ -149,6 +171,8 @@ app.post('/register', (req, res) => {
     }
   });
 });
+
+
 app.post('/', (req, res)=> {
   res.render('login',
     {
@@ -163,6 +187,10 @@ app.post("/home", isAuthenticated, (req, res) => {
   // Redirect to home.html with username in the query string
   res.redirect('/home');
 });
+
+
+
+
 
 function isAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {
@@ -182,12 +210,11 @@ function isAuthenticated(req, res, next) {
 
 // Listen for incoming socket connections
 io.on('connection', function(socket) {
-  // console.log('a user connected');
-  users++;
 
-  io.emit('connection', users);
+
 
   // Listen for incoming messages from client
+
   socket.on('message',
     function(data) {
       // console.log('message received: ' + data);
@@ -196,23 +223,14 @@ io.on('connection', function(socket) {
     });
 
   // Handle socket disconnection
-  socket.on('disconnect',
-    function() {
-      users--;
-      console.log('user disconnected');
-    });
 
 
+  socket.on('disconnect', function() {
 
-  socket.on("user-connect",
-    username=> {
-      console.log("connects")
+    console.log('user disconnected');
+  });
 
-      const message = "connected to chat";
-      socket.broadcast.emit("message", {
-        username, message
-      })
-    })
+
 
 
 
