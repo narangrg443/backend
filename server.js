@@ -101,6 +101,10 @@ app.get('/', function(req, res) {
   });
 });
 
+app.get('/login',(req,res)=>{
+  res.redirect('/')
+})
+
 
 app.get('/logout', function(req, res) {
 
