@@ -1,122 +1,113 @@
+
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PIKA CHAT</title>
-  <link rel="stylesheet" href="/css/style.css">
-  <style>
-    .logout-button {
-      position: absolute;
-      top: 40px;
-      right: 10px;
-      width: 60px;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h1>NEPALI CHAT</h1> Users:<span id="online-users"></span>
-    <button class="logout-button" onclick="window.location.href='/logout'">Logout</button>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PIKA CHAT</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+      .logout-button {
+        position: absolute;
+        top: 40px;
+        right: 10px;
+        width: 60px;
+      }
+      .header{
+        
+        color:white;
+      }
+      *{
+        
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>NEPALI CHAT</h1>
+      <div class="header">User:<span id="online-users"><b><%=user.username%></b></span></div>
+      <button class="logout-button" onclick="window.location.href='/logout'">Logout</button>
 
-    <div class="chat-window">
-      <div class="messages"></div>
-    </div>
+      <div class="chat-window">
+        <div class="messages">
 
-    <div class='text-input'>
-      <input type="text" id="message-input" placeholder="Type your message...">
-      <button id="send-button">Enter</button>
+            <%if(msg){for(let i=0;i<msg.msg.length;i++){%>
+            
+               <%if(msg.msg[i].name===user.username){%>
+              <div class='message send'>
+                <div class='name'>
+                  you
+                </div>
+                <div class='message-text'>
+                  <%= msg.msg[i].msg %>
+                </div>
+              </div>
+              
+                <%}else{%>
+                
+              <div class='message received'>
+                <div class='name'>
+                  <%=msg.msg[i].name%>
+                </div>
+                <div class='message-text'>
+                  <%= msg.msg[i].msg %>
+                </div>
+              </div>
+        
+                <%}}}%>
 
-    </div>
+          </div>
+        </div>
 
-  </div>
+        <div class='text-input'>
+          <input type="text" id="message-input" placeholder="Type your message...">
+          <button id="send-button">Enter</button>
 
+        </div>
 
-
-  <script src="/socket.io/socket.io.js"></script>
-  <script>
-    const socket = io();
-    const username = '<%= user.username || "" %>';
-
-
+      </div>
 
 
 
-    const onlineUsersList = null;
-    const users = 0;
-    const messagesContainer = document.querySelector('.messages');
-    const messageInput = document.querySelector('#message-input');
-    const sendButton = document.querySelector('#send-button');
-
-    sendButton.addEventListener("click", e=> {
-      send();
-    });
-    messageInput.addEventListener("click", e=> {
-      e.preventDefault();
-    })
+      <script src="/socket.io/socket.io.js"></script>
+      <script>
+        const socket = io();
+        const username = '<%= user.username || "" %>';
 
 
-    messageInput.addEventListener('focus', function() {
-      setTimeout(function() {
-        messageInput.scrollIntoView({
-          behavior: 'smooth', block: 'end', inline: 'nearest'
+
+
+
+        const onlineUsersList = null;
+        const users = 0;
+        const messagesContainer = document.querySelector('.messages');
+        const messageInput = document.querySelector('#message-input');
+        const sendButton = document.querySelector('#send-button');
+
+        sendButton.addEventListener("click", e=> {
+          send();
         });
-      }, 200);
-    });
+        
 
 
-    messageInput.addEventListener('keydown', (e) => {
-      e.preventDefault();
-
-      if (e.keyCode === 13) {
-        send();
-        socket.emit('user-login', username);
-
-      }
-    });
+        messageInput.addEventListener('focus', function() {
+          setTimeout(function() {
+            messageInput.scrollIntoView({
+              behavior: 'smooth', block: 'end', inline: 'nearest'
+            });
+          }, 200);
+        });
 
 
+        messageInput.addEventListener('keydown', (e) => {
+      
 
+          if (e.keyCode === 13) {
+            send();
+            socket.emit('user-login', username);
 
-
-
-
-    function addMessageToUI(username, message, sent) {
-      const messageElement = document.createElement('div');
-      messageElement.classList.add('message');
-      messageElement.classList.add(sent ? 'sent': 'received'); // add sent/received class
-
-      const usernameElement = document.createElement('div');
-      usernameElement.classList.add('username');
-      usernameElement.textContent = username;
-
-      const messageTextElement = document.createElement('div');
-      messageTextElement.classList.add('message-text');
-      messageTextElement.textContent = message;
-
-      messageElement.appendChild(usernameElement);
-      messageElement.appendChild(messageTextElement);
-
-      messagesContainer.appendChild(messageElement);
-    }
-
-
-    function send() {
-
-      const message = messageInput.value.trim();
-      if (message) {
-        socket.emit('message', {
-          username, message
-        }); // send username with message
-        addMessageToUI('You', message, true);
-        messageInput.value = '';
-        scrollToBottom();
-      }
-    }
-
-    function scrollToBottom() {
-      messagesContainer.scrollTo(0, messagesContainer.scrollHeight);
-    }
+          }
+        });
 
 
 
@@ -124,54 +115,99 @@
 
 
 
+        function addMessageToUI(username, message, sent) {
+          const messageElement = document.createElement('div');
+          messageElement.classList.add('message');
+          messageElement.classList.add(sent ? 'sent': 'received'); // add sent/received class
+
+          const usernameElement = document.createElement('div');
+          usernameElement.classList.add('username');
+          usernameElement.textContent = username;
+
+          const messageTextElement = document.createElement('div');
+          messageTextElement.classList.add('message-text');
+          messageTextElement.textContent = message;
+
+          messageElement.appendChild(usernameElement);
+          messageElement.appendChild(messageTextElement);
+
+          messagesContainer.appendChild(messageElement);
+          
+      
+        }
 
 
+        function send() {
 
-    socket.on('message', (data) => {
-      const {
-        username,
-        message
-      } = data;
-      addMessageToUI(username, message, false);
-      scrollToBottom();
+          const message = messageInput.value.trim();
+          if (message) {
+            socket.emit('message', {
+              username, message
+            }); // send username with message
+            addMessageToUI('You', message, true);
+            messageInput.value = '';
+            scrollToBottom();
+          }
+        }
 
-
-    });
-
-
-    // Client-side code
-
-    socket.on('user-logout', (username) => {
-
-      const message = `${username} has left the chat..`;
-      addMessageToUI("system", message, true);
-
-
-      //addMessageToUI('somebody', 'left chat', false)
-    });
-
-
-    socket.on('user-login', (username)=> {
-      console.log("client login")
-
-      const message = `${username} has connected to chat..`;
-      addMessageToUI("system", message, true);
-
-
-    })
-
-
-
-
-    socket.on('connect', () => {
-      socket.emit('user-login', username);
-      console.log(username, 'Connected to server!');
-    });
+        function scrollToBottom() {
+          messagesContainer.scrollTo(0, messagesContainer.scrollHeight);
+        }
 
 
 
 
 
-  </script>
-</body>
-</html>
+
+
+
+
+
+        socket.on('message', (data) => {
+          const {
+            username,
+            message
+          } = data;
+          addMessageToUI(username, message, false);
+          scrollToBottom();
+
+
+        });
+
+
+        // Client-side code
+
+        socket.on('user-logout', (username) => {
+
+          const message = `${username} has left the chat..`;
+          addMessageToUI("system", message, true);
+
+
+          //addMessageToUI('somebody', 'left chat', false)
+        });
+
+
+        socket.on('user-login', (username)=> {
+          console.log("client login")
+
+          const message = `${username} has connected to chat..`;
+          addMessageToUI("system", message, true);
+
+
+        })
+
+
+
+
+        socket.on('connect', () => {
+          socket.emit('user-login', username);
+          console.log(username, 'Connected to server!');
+        });
+
+
+
+
+
+      </script>
+    </body>
+  </html>
