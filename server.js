@@ -9,8 +9,11 @@ const session = require('express-session');
 const passport = require('passport')
 
 
-const LocalStrategy = require('passport-local').Strategy;
 
+
+
+const LocalStrategy = require('passport-local').Strategy;
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
 const passportLocalMongoose = require('passport-local-mongoose')
 const app = express();
@@ -20,14 +23,17 @@ const io = socketio(server);
 const dotenv = require('dotenv').config()
 
 
+
+
+
 let users = 0;
-let username=null;
+let username = null;
 // Serve static files from the public directory
 app.use(express.static("public", {
   extended: true
 }));
 
-
+app.use(express.json());
 app.use(express.urlencoded({
   extended: true
 }));
@@ -35,9 +41,17 @@ app.use(express.urlencoded({
 
 app.set('view engine', 'ejs');
 
+/*
+ app.use(session({
+    secret: process.env.GOOGLE_SECRECT,
+    resave: true,
+    saveUninitialized: true
+  }));
+*/
 
 app.use(session({
   secret: process.env.SESSION_KEY,
+
   resave: false,
   saveUninitialized: false
 }));
@@ -75,9 +89,8 @@ const messagesSchema = new mongoose.Schema({
 
   const userSchema = new mongoose.Schema({
     username: String,
-    password: String
-
-
+    password: String,
+    googleId: String
 
   });
 
@@ -93,32 +106,95 @@ const messagesSchema = new mongoose.Schema({
   passport.deserializeUser(chatUser.deserializeUser());
 
 
+  // server.JSON
+
+
+
+
+
+
+
+
+  // Configure passport middl
+  app.get('/auth/google', passport.authenticate('google', {
+    scope: ['profile']
+  }));
+
+  app.get('/auth/google/callback',
+    passport.authenticate('google', {
+      failureRedirect: '/login'
+    }),
+    (req, res) => {
+      // Successful authentication, redirect home.
+      res.redirect('/home');
+    });
+
 
 
   app.get('/home', isAuthenticated, async function(req, res) {
-  
 
     await Msg.findOne({})
     .then((e)=> {
-      if(e){
-       io.emit('user-login', req.user.username);
-       res.render('chat', {
-         user: req.user || {}, msg:e||{}
-       })      
-        //console.log('msg',e)
-      }else{
+      if (e) {
         io.emit('user-login', req.user.username);
-       res.render('chat', {
-         user: req.user || {},msg:null
-       })
+        res.render('chat', {
+          user: req.user || {}, msg: e || {}
+        })
+        //console.log('msg',e)
+      } else {
+        io.emit('user-login', req.user.username);
+        res.render('chat', {
+          user: req.user || {}, msg: null
+        })
       }
     })
     .catch((err)=> {
       console.log(err);
     })
 
-    
+
   });
+
+
+
+  passport.use(new GoogleStrategy({
+    clientID: process.env.CLIENT_ID,
+    clientSecret: process.env.CLIENT_SECRET_ID,
+    callbackURL: "/auth/google/callback"
+  },
+    async (accessToken, refreshToken, profile, done) => {
+      try {
+        const user = await chatUser.findOne({
+          googleId: profile.id
+        });
+        if (!user) {
+          // User not found, check if there is a local user with the same username
+          const localUser = await chatUser.findOne({
+            username: profile.displayName
+          });
+          if (!localUser) {
+            // No local user found, create a new user with Google ID
+            const newUser = new chatUser({
+              googleId: profile.id,
+              username: profile.displayName
+            });
+            await newUser.save();
+            done(null, newUser);
+          } else {
+            // Local user found, update their record with Google ID
+            localUser.googleId = profile.id;
+            await localUser.save();
+            done(null, localUser);
+          }
+        } else {
+          // User found, just log them in
+          done(null, user);
+        }
+      } catch (err) {
+        done(err);
+      }
+    }
+  ));
 
 
   /*
@@ -141,15 +217,17 @@ app.get('/home', isAuthenticated, async function(req, res) {
 
 
   app.get('/register', function(req, res) {
-    res.render('register', {
-      user: req.user
-    })
+    res.render('register',
+      {
+        user: req.user
+      })
   });
 
   app.get('/', function(req, res) {
-    res.render('login', {
-      message: null
-    });
+    res.render('login',
+      {
+        message: null
+      });
   });
 
   app.get('/login', (req, res)=> {
@@ -162,9 +240,10 @@ app.get('/home', isAuthenticated, async function(req, res) {
 
 
 
-    io.emit('user-logout', req.user.username || {});
+    io.emit('user-logout',
+      req.user.username || {});
 
-
+    
     req.logout(function(err) {
       if (err) {
         console.log(err);
@@ -197,10 +276,16 @@ app.post('/login', passport.authenticate('local', {
 
 
   app.post('/login', passport.authenticate('local', {
-    successRedirect: '/home',
+    //  successRedirect: '/home',
     failureRedirect: '/'
 
-  }));
+  }), (req, res)=> {
+    const {
+      username, password
+    } = req.body;
+    console.log('logged sucessful', username);
+    res.redirect('/home');
+  });
 
 
 
@@ -298,7 +383,7 @@ app.post('/login', passport.authenticate('local', {
           }
         })
         .then((savedMsg) => {
-         // console.log('Message saved:', savedMsg); // log the saved or updated document
+          // console.log('Message saved:', savedMsg); // log the saved or updated document
         })
         .catch((error) => {
           console.error('Error saving message:', error); // log any errors

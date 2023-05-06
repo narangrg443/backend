@@ -5,7 +5,15 @@
 
 
   <link rel="stylesheet" type="text/css" href="/css/login.css">
+<style>
+ 
+a {
+  text-decoration: none;
+  color: white;
+}
 
+  
+</style>
 
 </head>
 <body>
@@ -20,7 +28,13 @@
       <input type="password" name="password" placeholder="Password" required>
       <input type="submit" value="Login">
     </form>
-    <p>
+    
+    <p > login with guest account</p>
+   
+    
+  <h1>Login with Google</h1>
+  <a href="/auth/google"><img src="https://developers.google.com/identity/images/btn_google_signin_dark_normal_web.png"></a>
+  <p>
       Don't have an account? <a href="/register">Register</a>
     </p>
     <% if (message) {
@@ -36,15 +50,10 @@
   </p>
   <script>
     const socket = io();
-
-    const formElement = document.getElementById('login');
 /*
     formElement.addEventListener('submit', e=> {
       e.preventDefault();
-      const username = document.getElementById('username').value;
-      socket.emit('user-login', username);
-
-    });
+      const username = document.getElementById('username').val
 */
   </script>
 
