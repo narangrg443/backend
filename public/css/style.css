@@ -1,13 +1,19 @@
-body {
+body,html {
+
+
   overflow: hidden;
 
   margin: 0;
   padding: 0;
-  background:brown;
+  background: brown;
+  height: 100%;
+  width:100%;
 }
 
 .container {
-  max-width: 800px;
+  height: 79%;
+  background: red;
+  max-width:99%;
   margin: 0px;
   padding: 5px;
   font-family: Arial, sans-serif;
@@ -16,15 +22,22 @@ body {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
 
+.chat-window {
 
+  background-color: green;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
 
 .messages {
 
-
+  position: relative;
   background-image: url("https://www.nepalyp.com/img/np/l/_1588331040_33115.jpg");
-  background-size: cover;
+  flex: 1;
 
-  height: 500px;
+  background-size: cover;
+  height: 100%;
   overflow-y: scroll;
   opacity: .8;
 
@@ -55,14 +68,19 @@ body {
 
 .text-input {
   display: flex;
-  justify-content: space-between;
+  bottom: 0;
+  left: 0;
+  right: 0;
   height: 50px;
   margin-top: 10px;
   padding: 0px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
 
+
 .message-text {
+
+
   background-color: white;
   padding: 10px;
   border-radius: 10px;
@@ -123,13 +141,12 @@ h1 {
     padding: 5px;
   }
   .messages {
-    max-height: 250px;
-
+    max-height: 100%;
   }
 
   input {
 
-    width: 60%;
+    width: 60%;;
   }
   button {
     width: 40%;
